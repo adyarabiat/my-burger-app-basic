@@ -27,7 +27,11 @@ const bulidControls = (props) => {
           />
         );
       })}
-      <button disabled={!props.orderBtn} className={styles.OrderButton}>
+      <button
+        disabled={!props.orderBtn}
+        className={styles.OrderButton}
+        onClick={props.show}
+      >
         ORDER NOW
       </button>
     </div>

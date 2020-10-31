@@ -28,6 +28,7 @@ class BurgerBuilder extends React.Component {
     },
     totalPrice: 0,
     purchasable: false,
+    purchasing: false,
   };
 
   Addingredients = (type) => {
@@ -81,14 +82,22 @@ class BurgerBuilder extends React.Component {
       .reduce((sum, el) => {
         return sum + el;
       }, 0);
-    console.log(purchaseAmount);
+    // console.log(purchaseAmount);
     this.setState({ purchasable: purchaseAmount > 0 });
+  };
+
+  Purchasing = () => {
+    this.setState({ purchasing: true });
+  };
+
+  closeModel = () => {
+    this.setState({ purchasing: false });
   };
 
   render() {
     return (
       <Aux>
-        <Model>
+        <Model checkShow={this.state.purchasing} modelClose={this.closeModel}>
           <OrderSummary ingredients={this.state.ingredients} />
         </Model>
         <Burger ingredients={this.state.ingredients} />
@@ -98,6 +107,7 @@ class BurgerBuilder extends React.Component {
           disable={this.DisableLess()}
           price={this.state.totalPrice}
           orderBtn={this.state.purchasable}
+          show={this.Purchasing}
         />
       </Aux>
     );
