@@ -27,6 +27,9 @@ const bulidControls = (props) => {
           />
         );
       })}
+      <button disabled={!props.orderBtn} className={styles.OrderButton}>
+        ORDER NOW
+      </button>
     </div>
   );
 };
