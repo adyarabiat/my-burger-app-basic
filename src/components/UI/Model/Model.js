@@ -3,6 +3,7 @@ import React from "react";
 import styles from "./Model.module.css";
 import Backdrop from "../Backdrop/Backdrop";
 import Aux from "../../../hoc/Aux";
+
 const model = (props) => {
   return (
     <Aux>

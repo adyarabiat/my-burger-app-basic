@@ -94,11 +94,18 @@ class BurgerBuilder extends React.Component {
     this.setState({ purchasing: false });
   };
 
+  continueModel = () => {
+    alert("You are Continuing!!");
+  };
   render() {
     return (
       <Aux>
         <Model checkShow={this.state.purchasing} modelClose={this.closeModel}>
-          <OrderSummary ingredients={this.state.ingredients} />
+          <OrderSummary
+            ingredients={this.state.ingredients}
+            cancel={this.closeModel}
+            continue={this.continueModel}
+          />
         </Model>
         <Burger ingredients={this.state.ingredients} />
         <BuildControls
