@@ -13,8 +13,19 @@ const controls = [
 const bulidControls = (props) => {
   return (
     <div className={styles.BuildControls}>
+      <p>
+        Current Price: <strong>{props.price.toFixed(2)} $</strong>
+      </p>
       {controls.map((ctrl) => {
-        return <BuildControl key={ctrl.label} label={ctrl.label} />;
+        return (
+          <BuildControl
+            key={ctrl.label}
+            label={ctrl.label}
+            add={() => props.ingredientsAdd(ctrl.type)}
+            remove={() => props.ingredientsRemove(ctrl.type)}
+            disable={props.disable[ctrl.type]}
+          />
+        );
       })}
     </div>
   );
