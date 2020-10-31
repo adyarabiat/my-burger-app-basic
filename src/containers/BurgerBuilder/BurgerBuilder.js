@@ -105,6 +105,7 @@ class BurgerBuilder extends React.Component {
             ingredients={this.state.ingredients}
             cancel={this.closeModel}
             continue={this.continueModel}
+            price={this.state.totalPrice}
           />
         </Model>
         <Burger ingredients={this.state.ingredients} />
