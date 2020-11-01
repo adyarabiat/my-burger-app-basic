@@ -1,18 +1,42 @@
-import React from "react";
+import React, { Component } from "react";
 
 import Aux from "../../hoc/Aux";
 import styles from "./Layout.module.css";
 import Toolbar from "../Toolbar/Toolbar";
 import SideDrawer from "../../components/Navigation/SideDrawer/SideDrawer";
 
-const layout = (props) => {
-  return (
-    <Aux>
-      <SideDrawer />
-      <Toolbar />
-      <main className={styles.Content}>{props.children}</main>
-    </Aux>
-  );
-};
+class Layout extends Component {
+  // We change layout to class based to manage a state here for the SideDrawer
 
-export default layout;
+  state = {
+    sideDrawerClosed: false,
+  };
+
+  ChangeSideDrawer = () => {
+    this.setState({ sideDrawerClosed: false });
+  };
+
+  sideDrawerToggle = () => {
+    // I can do it like this:
+    this.setState({ sideDrawerClosed: true });
+
+    // Or I can do it like this:
+    // this.setState((prevState) => {
+    //   return { sideDrawerClosed: !prevState.sideDrawerClosed };
+    // });
+  };
+  render() {
+    return (
+      <Aux>
+        <SideDrawer
+          open={this.state.sideDrawerClosed}
+          closed={this.ChangeSideDrawer}
+        />
+        <Toolbar clicked={this.sideDrawerToggle} />
+        <main className={styles.Content}>{this.props.children}</main>
+      </Aux>
+    );
+  }
+}
+
+export default Layout;
