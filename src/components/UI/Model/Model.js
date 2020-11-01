@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import styles from "./Model.module.css";
 import Backdrop from "../Backdrop/Backdrop";
-import Aux from "../../../hoc/Aux";
+import Aux from "../../../hoc/Aux/Aux";
 
 class Model extends Component {
   // To improve the performance we should not update the Model everytime we change something in the UI
