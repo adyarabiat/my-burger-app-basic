@@ -10,7 +10,10 @@ class Model extends Component {
   // So becouse of this we use shouldComponentUpdate
   // So it will check if the props.checkShow !== to the current props.checkShow So by that it means that we clicked on it and it will show so it check here always if the next one not the same as the prev one
   shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.checkShow !== this.props.checkShow;
+    return (
+      nextProps.checkShow !== this.props.checkShow ||
+      nextProps.children !== this.props.children
+    );
   }
 
   componentDidUpdate() {

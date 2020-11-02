@@ -6,6 +6,7 @@ import BuildControls from "../../components/Burger/BuildControls/BuildControls";
 import Model from "../../components/UI/Model/Model";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 import axiosInstance from "../../axios-orders";
+import Spinner from "../../components/UI/Spinner/Spinner";
 
 const INGREDIENTS_PRICES = {
   salad: 0.4,
@@ -30,6 +31,7 @@ class BurgerBuilder extends React.Component {
     totalPrice: 0,
     purchasable: false,
     purchasing: false,
+    loading: false,
   };
 
   Addingredients = (type) => {
@@ -97,6 +99,9 @@ class BurgerBuilder extends React.Component {
 
   continueModel = () => {
     // alert("You are Continuing!!");
+
+    // Becouse we start sending the data we want to set the loading to true
+    this.setState({ loading: true });
     const order = {
       ingredients: this.state.ingredients,
       price: this.state.totalPrice,
@@ -115,23 +120,33 @@ class BurgerBuilder extends React.Component {
     axiosInstance
       .post("/orders.json", order)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
+        // Here when we send the data we have to turn the loading to false becouse we finished
+        this.setState({ loading: false, purchasing: false });
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
+        // same here even if we catch an error we have to stop loading
+        this.setState({ loading: false, purchasing: false });
       });
   };
 
   render() {
+    let orderSummary = (
+      <OrderSummary
+        ingredients={this.state.ingredients}
+        cancel={this.closeModel}
+        continue={this.continueModel}
+        price={this.state.totalPrice}
+      />
+    );
+    if (this.state.loading) {
+      orderSummary = <Spinner />;
+    }
     return (
       <Aux>
         <Model checkShow={this.state.purchasing} modelClose={this.closeModel}>
-          <OrderSummary
-            ingredients={this.state.ingredients}
-            cancel={this.closeModel}
-            continue={this.continueModel}
-            price={this.state.totalPrice}
-          />
+          {orderSummary}
         </Model>
         <Burger ingredients={this.state.ingredients} />
         <BuildControls
