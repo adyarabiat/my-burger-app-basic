@@ -11,20 +11,26 @@ const withErrorHandler = (WrappedComponent, axios) => {
       error: null,
     };
 
-    componentDidMount() {
+    //  Explaination down
+    constructor(props) {
+      super(props);
+      // this request method to return it back to null
+      this.reqInterceptors = axios.interceptors.request.use((request) => {
+        this.setState({ error: null });
+        return request;
+      });
       // we set the first argumant to null which is the response but becouse we do not need it here that is why
-      axios.interceptors.response.use(
+      this.resInterceptors = axios.interceptors.response.use(
         (response) => response,
         (err) => {
           this.setState({ error: err });
         }
       );
+    }
 
-      // this request method to return it back to null
-      axios.interceptors.request.use((request) => {
-        this.setState({ error: null });
-        return request;
-      });
+    componentWillUnmount() {
+      axios.interceptors.response.eject(this.reqInterceptors);
+      axios.interceptors.request.eject(this.reqInterceptors);
     }
 
     errorConfirmed = () => {
@@ -47,3 +53,14 @@ const withErrorHandler = (WrappedComponent, axios) => {
 export default withErrorHandler;
 // Model
 // here we want to use the model functionality by make backdrop and stuff like that here that is why we import it
+// ********************
+// Constructure instead of compoenetDidmount
+// So we use componentDidMount to make the http request
+// BUT in the Burgerbuilder if the get method have an error or something this one here will not find it WHY! becouse when we run the app we call componentDidMount after we run the render which is the child compoent of it which the Burgerbuilder! so it will not catch that error
+// SOLUTION
+// To add the http request or the catch here in the constructure so we run it when we first run the withErrorHandler instead of waiting until the child component finished
+
+// componentWillUnmount()
+// Why we have to do this ?
+// becouse withErrorHandle we might use it in many other pages and wrrape the class or the function with it!!
+// we wrrape the functions and classes with it to show an error if it is happen but actully we want to run axios.interceptors first time we run the app and that set ! After that no need to do this again and again becouse we already get the data from it so we have to unmount it to not take a place in memory everytime ! So we have to Unmount this after each cycle

@@ -23,17 +23,29 @@ class BurgerBuilder extends React.Component {
   // }
 
   state = {
-    ingredients: {
-      salad: 0,
-      bacon: 0,
-      cheese: 0,
-      meat: 0,
-    },
+    ingredients: null,
     totalPrice: 0,
     purchasable: false,
     purchasing: false,
     loading: false,
+    error: false,
   };
+
+  // Fetch our data from Firebase
+  componentDidMount() {
+    // We use here the the link from Firebase this link we get it from the data that we create it not the !== project baseURL
+    axiosInstance
+      .get("https://react-my-burger-65308.firebaseio.com/ingredients.json")
+      .then((response) => {
+        // console.log(response);
+        this.setState({ ingredients: response.data });
+        // Now after we did this we will find that there is an error that is becouse when we start our app we start with ingredients:null so the app will work on this data not the fetched data in the first time
+        // So I have to check if it is null or not in the render() here to do something when we run the app first
+      })
+      .catch((err) => {
+        this.setState({ error: true });
+      });
+  }
 
   Addingredients = (type) => {
     const oldCount = this.state.ingredients[type];
@@ -101,6 +113,8 @@ class BurgerBuilder extends React.Component {
   continueModel = () => {
     // alert("You are Continuing!!");
 
+    // So Remmember here we want to post data and store it in our database (firebase)
+
     // Becouse we start sending the data we want to set the loading to true
     this.setState({ loading: true });
     const order = {
@@ -119,7 +133,7 @@ class BurgerBuilder extends React.Component {
     };
 
     axiosInstance
-      .post("/orders", order)
+      .post("/orders.json", order)
       .then((response) => {
         // console.log(response);
         // Here when we send the data we have to turn the loading to false becouse we finished
@@ -133,31 +147,52 @@ class BurgerBuilder extends React.Component {
   };
 
   render() {
-    let orderSummary = (
-      <OrderSummary
-        ingredients={this.state.ingredients}
-        cancel={this.closeModel}
-        continue={this.continueModel}
-        price={this.state.totalPrice}
-      />
+    let orderSummary = null;
+    let burger = this.state.error ? (
+      <p>The ingredients not loaded...</p>
+    ) : (
+      <Spinner />
     );
+
+    // {orderSummary}
     if (this.state.loading) {
       orderSummary = <Spinner />;
     }
+    // {burger}
+
+    if (this.state.ingredients) {
+      burger = (
+        <>
+          <Burger ingredients={this.state.ingredients} />
+          <BuildControls
+            ingredientsAdd={this.Addingredients}
+            ingredientsRemove={this.Removeingredients}
+            disable={this.DisableLess()}
+            price={this.state.totalPrice}
+            orderBtn={this.state.purchasable}
+            show={this.Purchasing}
+          />
+        </>
+      );
+
+      /* we added orderSummary here becouse it uses  ingredients so we have to make sure that ingredients not null and wait to fetch it then we can call it */
+
+      orderSummary = (
+        <OrderSummary
+          ingredients={this.state.ingredients}
+          cancel={this.closeModel}
+          continue={this.continueModel}
+          price={this.state.totalPrice}
+        />
+      );
+    }
+
     return (
       <Aux>
         <Model checkShow={this.state.purchasing} modelClose={this.closeModel}>
           {orderSummary}
         </Model>
-        <Burger ingredients={this.state.ingredients} />
-        <BuildControls
-          ingredientsAdd={this.Addingredients}
-          ingredientsRemove={this.Removeingredients}
-          disable={this.DisableLess()}
-          price={this.state.totalPrice}
-          orderBtn={this.state.purchasable}
-          show={this.Purchasing}
-        />
+        {burger}
       </Aux>
     );
   }
