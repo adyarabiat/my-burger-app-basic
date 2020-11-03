@@ -7,6 +7,7 @@ import Model from "../../components/UI/Model/Model";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 import axiosInstance from "../../axios-orders";
 import Spinner from "../../components/UI/Spinner/Spinner";
+import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 
 const INGREDIENTS_PRICES = {
   salad: 0.4,
@@ -118,7 +119,7 @@ class BurgerBuilder extends React.Component {
     };
 
     axiosInstance
-      .post("/orders.json", order)
+      .post("/orders", order)
       .then((response) => {
         // console.log(response);
         // Here when we send the data we have to turn the loading to false becouse we finished
@@ -162,4 +163,4 @@ class BurgerBuilder extends React.Component {
   }
 }
 
-export default BurgerBuilder;
+export default withErrorHandler(BurgerBuilder, axiosInstance);
