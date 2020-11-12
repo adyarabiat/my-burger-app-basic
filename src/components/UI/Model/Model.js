@@ -17,7 +17,7 @@ class Model extends Component {
   }
 
   componentDidUpdate() {
-    console.log("[Model.js Update]");
+    // console.log("[Model.js Update]");
   }
 
   render() {

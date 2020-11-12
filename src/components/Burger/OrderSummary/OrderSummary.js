@@ -8,7 +8,7 @@ import Button from "../../UI/Button/Button";
 // First we add componentDidUpdate to check when it is updating
 class OrderSummary extends Component {
   componentDidUpdate() {
-    console.log("[orderSummary.js componentDidUpdate ]");
+    // console.log("[orderSummary.js componentDidUpdate ]");
   }
   render() {
     const ingredientsSummary = Object.keys(this.props.ingredients).map(
@@ -30,9 +30,11 @@ class OrderSummary extends Component {
           <strong>Total Price: {this.props.price.toFixed(2)} $</strong>
         </p>
         <p>Continue to Checkout?</p>
+
         <Button btnType="Success" click={this.props.continue}>
           Continue
         </Button>
+
         <Button btnType="Danger" click={this.props.cancel}>
           Cancel
         </Button>

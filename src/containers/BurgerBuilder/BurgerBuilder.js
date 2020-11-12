@@ -111,39 +111,23 @@ class BurgerBuilder extends React.Component {
   };
 
   continueModel = () => {
-    // alert("You are Continuing!!");
+    // here we do this to pass data that the user enter to the checkout page
+    const queryParams = [];
+    for (let i in this.state.ingredients) {
+      queryParams.push(
+        encodeURIComponent(i) +
+          "=" +
+          encodeURIComponent(this.state.ingredients[i])
+      );
+    }
+    queryParams.push("price=" + this.state.totalPrice);
 
-    // So Remmember here we want to post data and store it in our database (firebase)
+    const queryString = queryParams.join("&");
 
-    // Becouse we start sending the data we want to set the loading to true
-    this.setState({ loading: true });
-    const order = {
-      ingredients: this.state.ingredients,
-      price: this.state.totalPrice,
-      customer: {
-        name: "Ady Arabiat",
-        address: {
-          street: "Al Ruwais",
-          zipCode: "234",
-          country: "Jordan",
-        },
-        email: "test@gmail.com",
-      },
-      deliveryMethod: "Fastest",
-    };
-
-    axiosInstance
-      .post("/orders.json", order)
-      .then((response) => {
-        // console.log(response);
-        // Here when we send the data we have to turn the loading to false becouse we finished
-        this.setState({ loading: false, purchasing: false });
-      })
-      .catch((err) => {
-        // console.log(err);
-        // same here even if we catch an error we have to stop loading
-        this.setState({ loading: false, purchasing: false });
-      });
+    this.props.history.push({
+      pathname: "/checkout",
+      search: "?" + queryString,
+    });
   };
 
   render() {
