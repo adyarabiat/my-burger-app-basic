@@ -1,17 +1,65 @@
 import React, { Component } from "react";
 import axiosInstance from "../../../axios-orders";
 import { withRouter } from "react-router-dom";
+
 import Button from "../../../components/UI/Button/Button";
 import styles from "./ContactData.module.css";
 import Spinner from "../../../components/UI/Spinner/Spinner";
+import InputComp from "../../../components/UI/Input/Input";
 
 class ContactData extends Component {
   state = {
-    name: "",
-    email: "",
-    address: {
-      street: "",
-      postalCode: "",
+    orderForm: {
+      name: {
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "Your Name",
+        },
+        value: "",
+      },
+      street: {
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "Street",
+        },
+        value: "",
+      },
+      zipCode: {
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "ZIP CODE",
+        },
+        value: "",
+      },
+      country: {
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "Country",
+        },
+        value: "",
+      },
+      email: {
+        elementType: "input",
+        elementConfig: {
+          type: "email",
+          placeholder: "Your Email",
+        },
+        value: "",
+      },
+      deliveryMethod: {
+        elementType: "select",
+        elementConfig: {
+          options: [
+            { value: "fastest", display: "Fastest" },
+            { value: "slower", display: "Slower" },
+          ],
+        },
+        value: "",
+      },
     },
     loading: false,
   };
@@ -26,19 +74,21 @@ class ContactData extends Component {
     // So Remmember here we want to post data and store it in our database (firebase)
     // Becouse we start sending the data we want to set the loading to true
     this.setState({ loading: true });
+
+    // Here we are Submitting the form :
+    const forData = {};
+    for (let formElementIdentifier in this.state.orderForm) {
+      // formElementIdentifier it is like the keys in the object : name , street ,email ....
+      forData[formElementIdentifier] = this.state.orderForm[
+        formElementIdentifier
+      ].value;
+    }
+    // Then after we create those objects we will go to the order here down and we set orderData to : forData
+    // console.log(forData);
     const order = {
       ingredients: this.props.ingre,
       price: this.props.price,
-      customer: {
-        name: "Ady Arabiat",
-        address: {
-          street: "Al Ruwais",
-          zipCode: "234",
-          country: "Jordan",
-        },
-        email: "test@gmail.com",
-      },
-      deliveryMethod: "Fastest",
+      orderData: forData,
     };
     axiosInstance
       .post("/orders.json", order)
@@ -56,34 +106,47 @@ class ContactData extends Component {
         });
       });
   };
+  inputChangedHandler = (event, inputIdentifier) => {
+    // Copy of the orderForm
+    const updatedOrderForm = {
+      ...this.state.orderForm,
+    };
+    // Copy of the values for the id's of the orderForm
+    const updatedFormElement = {
+      ...updatedOrderForm[inputIdentifier],
+    };
+    // Changing the values inside that id's safely now
+    updatedFormElement.value = event.target.value;
+    // then we give the values for the whole form
+    updatedOrderForm[inputIdentifier] = updatedFormElement;
+    // then we update the state
+    this.setState({ orderForm: updatedOrderForm });
+  };
 
   render() {
+    const formElementsArray = [];
+    for (let key in this.state.orderForm) {
+      formElementsArray.push({
+        id: key,
+        config: this.state.orderForm[key],
+      });
+    }
+    // console.log(formElementsArray);
+
     let form = (
-      <form>
-        <input
-          className={styles.Input}
-          type="text"
-          name="name"
-          placeholder="Your name"
-        />
-        <input
-          className={styles.Input}
-          type="text"
-          name="email"
-          placeholder="Your Email"
-        />
-        <input
-          className={styles.Input}
-          type="text"
-          name="street"
-          placeholder="Street"
-        />
-        <input
-          className={styles.Input}
-          type="text"
-          name="postal"
-          placeholder="Postal Code"
-        />
+      <form onSubmit={this.orderHandler}>
+        {formElementsArray.map((forElement) => {
+          return (
+            <InputComp
+              key={forElement.id}
+              elementType={forElement.config.elementType}
+              elementConfig={forElement.config.elementConfig}
+              value={forElement.config.value}
+              change={(event) => this.inputChangedHandler(event, forElement.id)}
+            />
+          );
+        })}
+
         <Button
           className={styles.Input}
           btnType="Success"
@@ -98,7 +161,7 @@ class ContactData extends Component {
     }
     return (
       <div className={styles.ContactData}>
-        <h4>Enter your Contact Data</h4>
+        <h4>Enter your Contact Info:</h4>
         {form}
       </div>
     );
