@@ -1,5 +1,7 @@
 import React from "react";
+import { connect } from "react-redux";
 
+import * as actionType from "../../store/actions";
 import Aux from "../../hoc/Aux/Aux";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
@@ -9,12 +11,6 @@ import axiosInstance from "../../axios-orders";
 import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 
-const INGREDIENTS_PRICES = {
-  salad: 0.4,
-  bacon: 2,
-  cheese: 1,
-  meat: 2.3,
-};
 class BurgerBuilder extends React.Component {
   // We can use this
   // constructor(props){
@@ -23,9 +19,6 @@ class BurgerBuilder extends React.Component {
   // }
 
   state = {
-    ingredients: null,
-    totalPrice: 0,
-    purchasable: false,
     purchasing: false,
     loading: false,
     error: false,
@@ -33,55 +26,24 @@ class BurgerBuilder extends React.Component {
 
   // Fetch our data from Firebase
   componentDidMount() {
-    // We use here the the link from Firebase this link we get it from the data that we create it not the !== project baseURL
-    axiosInstance
-      .get("https://react-my-burger-65308.firebaseio.com/ingredients.json")
-      .then((response) => {
-        // console.log(response);
-        this.setState({ ingredients: response.data });
-        // Now after we did this we will find that there is an error that is becouse when we start our app we start with ingredients:null so the app will work on this data not the fetched data in the first time
-        // So I have to check if it is null or not in the render() here to do something when we run the app first
-      })
-      .catch((err) => {
-        this.setState({ error: true });
-      });
+    // // We use here the the link from Firebase this link we get it from the data that we create it not the !== project baseURL
+    // axiosInstance
+    //   .get("https://react-my-burger-65308.firebaseio.com/ingredients.json")
+    //   .then((response) => {
+    //     // console.log(response);
+    //     this.setState({ ingredients: response.data });
+    //     // Now after we did this we will find that there is an error that is becouse when we start our app we start with ingredients:null so the app will work on this data not the fetched data in the first time
+    //     // So I have to check if it is null or not in the render() here to do something when we run the app first
+    //   })
+    //   .catch((err) => {
+    //     this.setState({ error: true });
+    //   });
   }
-
-  Addingredients = (type) => {
-    const oldCount = this.state.ingredients[type];
-    const updatedCount = oldCount + 1;
-    const updatedIng = {
-      ...this.state.ingredients,
-    };
-    updatedIng[type] = updatedCount;
-    const priceAddition = INGREDIENTS_PRICES[type];
-    const oldPrice = this.state.totalPrice;
-    const newPrice = oldPrice + priceAddition;
-    this.setState({ totalPrice: newPrice, ingredients: updatedIng });
-    this.Purchasable(updatedIng);
-  };
-
-  Removeingredients = (type) => {
-    const oldCount = this.state.ingredients[type];
-    if (oldCount <= 0) {
-      return;
-    }
-    let updatedCount = oldCount - 1;
-    const updatedIng = {
-      ...this.state.ingredients,
-    };
-    updatedIng[type] = updatedCount;
-    const priceDeduction = INGREDIENTS_PRICES[type];
-    const oldPrice = this.state.totalPrice;
-    let newPrice = oldPrice - priceDeduction;
-    this.setState({ totalPrice: newPrice, ingredients: updatedIng });
-    this.Purchasable(updatedIng);
-  };
 
   DisableLess = () => {
     // Disable the less button
     const disableInfo = {
-      ...this.state.ingredients,
+      ...this.props.ings,
     };
     for (let key in disableInfo) {
       disableInfo[key] = disableInfo[key] <= 0;
@@ -99,7 +61,7 @@ class BurgerBuilder extends React.Component {
         return sum + el;
       }, 0);
     // console.log(purchaseAmount);
-    this.setState({ purchasable: purchaseAmount > 0 });
+    return purchaseAmount > 0;
   };
 
   Purchasing = () => {
@@ -113,14 +75,12 @@ class BurgerBuilder extends React.Component {
   continueModel = () => {
     // here we do this to pass data that the user enter to the checkout page
     const queryParams = [];
-    for (let i in this.state.ingredients) {
+    for (let i in this.props.ings) {
       queryParams.push(
-        encodeURIComponent(i) +
-          "=" +
-          encodeURIComponent(this.state.ingredients[i])
+        encodeURIComponent(i) + "=" + encodeURIComponent(this.props.ings[i])
       );
     }
-    queryParams.push("price=" + this.state.totalPrice);
+    queryParams.push("price=" + this.props.ings);
 
     const queryString = queryParams.join("&");
 
@@ -144,16 +104,16 @@ class BurgerBuilder extends React.Component {
     }
     // {burger}
 
-    if (this.state.ingredients) {
+    if (this.props.ings) {
       burger = (
         <>
-          <Burger ingredients={this.state.ingredients} />
+          <Burger ingredients={this.props.ings} />
           <BuildControls
-            ingredientsAdd={this.Addingredients}
-            ingredientsRemove={this.Removeingredients}
+            ingredientsAdd={this.props.onAddIngs}
+            ingredientsRemove={this.props.onRemoveIngs}
             disable={this.DisableLess()}
-            price={this.state.totalPrice}
-            orderBtn={this.state.purchasable}
+            price={this.props.price}
+            orderBtn={this.Purchasable(this.props.ings)}
             show={this.Purchasing}
           />
         </>
@@ -163,10 +123,10 @@ class BurgerBuilder extends React.Component {
 
       orderSummary = (
         <OrderSummary
-          ingredients={this.state.ingredients}
+          ingredients={this.props.ings}
           cancel={this.closeModel}
           continue={this.continueModel}
-          price={this.state.totalPrice}
+          price={this.props.price}
         />
       );
     }
@@ -182,4 +142,24 @@ class BurgerBuilder extends React.Component {
   }
 }
 
-export default withErrorHandler(BurgerBuilder, axiosInstance);
+const mapStateToProps = (state) => {
+  return {
+    ings: state.ingredients,
+    price: state.totalPrice,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onAddIngs: (ingName) => {
+      dispatch({ type: actionType.ADD_INGREDIENT, ingredientName: ingName });
+    },
+    onRemoveIngs: (ingName) => {
+      dispatch({ type: actionType.REMOVE_INGREDIENT, ingredientName: ingName });
+    },
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withErrorHandler(BurgerBuilder, axiosInstance));
