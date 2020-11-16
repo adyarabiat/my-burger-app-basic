@@ -73,21 +73,7 @@ class BurgerBuilder extends React.Component {
   };
 
   continueModel = () => {
-    // here we do this to pass data that the user enter to the checkout page
-    const queryParams = [];
-    for (let i in this.props.ings) {
-      queryParams.push(
-        encodeURIComponent(i) + "=" + encodeURIComponent(this.props.ings[i])
-      );
-    }
-    queryParams.push("price=" + this.props.ings);
-
-    const queryString = queryParams.join("&");
-
-    this.props.history.push({
-      pathname: "/checkout",
-      search: "?" + queryString,
-    });
+    this.props.history.push("/checkout");
   };
 
   render() {

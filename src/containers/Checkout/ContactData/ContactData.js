@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axiosInstance from "../../../axios-orders";
 import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 
 import Button from "../../../components/UI/Button/Button";
 import styles from "./ContactData.module.css";
@@ -116,7 +117,7 @@ class ContactData extends Component {
     // Then after we create those objects we will go to the order here down and we set orderData to : forData
     // console.log(forData);
     const order = {
-      ingredients: this.props.ingre,
+      ingredients: this.props.ings,
       price: this.props.price,
       orderData: forData,
     };
@@ -229,4 +230,10 @@ class ContactData extends Component {
   }
 }
 
-export default withRouter(ContactData);
+const mapStateToProps = (state) => {
+  return {
+    ings: state.ingredients,
+    price: state.totalPrice,
+  };
+};
+export default connect(mapStateToProps)(withRouter(ContactData));
