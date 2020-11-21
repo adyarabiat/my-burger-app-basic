@@ -7,6 +7,7 @@ import thunk from "redux-thunk";
 
 import BurgerBuilderReducer from "./store/reducers/BurgerBuilderReducer";
 import OrderReducer from "./store/reducers/OrderReducer";
+import AuthReducer from "./store/reducers/authReducer";
 import App from "./App";
 import "./index.css";
 
@@ -15,6 +16,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const rootReducer = combineReducers({
   burgerBuilder: BurgerBuilderReducer,
   order: OrderReducer,
+  auth: AuthReducer,
 });
 
 const store = createStore(
