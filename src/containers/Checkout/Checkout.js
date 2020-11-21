@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route } from "react-router";
+import { Redirect, Route } from "react-router";
 import { connect } from "react-redux";
 
 import CheckoutSummary from "../../components/Order/CheckoutSummary/CheckoutSummary";
@@ -13,25 +13,37 @@ class Checkout extends Component {
     this.props.history.replace("/checkout/contact-data");
   };
   render() {
-    return (
-      <div>
-        <CheckoutSummary
-          ingredients={this.props.ings}
-          checkoutCanceled={this.canceledHandler}
-          checkoutContinued={this.continuedHandler}
-        />
-        <Route
-          path={`${this.props.match.url}/contact-data`}
-          component={ContactData}
-        />
-      </div>
-    );
+    // If we refresh the page and there will be no ingredients so we have to solve this by check this before
+
+    let summary = <Redirect to="/" />;
+    if (this.props.ings) {
+      // Here I dispatch purchased in the BurgerBuilder.js in the continueModel()
+      const purchasedRedirect = this.props.purchased ? (
+        <Redirect to="/" />
+      ) : null;
+      summary = (
+        <>
+          {purchasedRedirect}
+          <CheckoutSummary
+            ingredients={this.props.ings}
+            checkoutCanceled={this.canceledHandler}
+            checkoutContinued={this.continuedHandler}
+          />
+          <Route
+            path={`${this.props.match.url}/contact-data`}
+            component={ContactData}
+          />
+        </>
+      );
+    }
+    return summary;
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    ings: state.ingredients,
+    ings: state.burgerBuilder.ingredients,
+    purchased: state.order.purchased,
   };
 };
 

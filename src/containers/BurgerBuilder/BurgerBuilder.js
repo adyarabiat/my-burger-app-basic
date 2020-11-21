@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 
 import * as BurgerBuilderAction from "../../store/actions/BurgerBuilderActions";
+import * as orderAction from "../../store/actions/OrdersActions";
 import Aux from "../../hoc/Aux/Aux";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
@@ -60,6 +61,9 @@ class BurgerBuilder extends React.Component {
   };
 
   continueModel = () => {
+    // We call this dispatch here becouse:
+    // we want to set purchased to false and not to keep me in the home page so then when I do sucess post the info set it again to true..
+    this.props.onPurchaseInit();
     this.props.history.push("/checkout");
   };
 
@@ -112,9 +116,9 @@ class BurgerBuilder extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    ings: state.ingredients,
-    price: state.totalPrice,
-    error: state.error,
+    ings: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    error: state.burgerBuilder.error,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -128,6 +132,7 @@ const mapDispatchToProps = (dispatch) => {
     onInitIngredients: () => {
       dispatch(BurgerBuilderAction.fetchIngredients());
     },
+    onPurchaseInit: () => dispatch(orderAction.purchaseInit()),
   };
 };
 
