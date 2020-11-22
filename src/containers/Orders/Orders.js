@@ -11,7 +11,7 @@ class Orders extends Component {
   // Now here we want to fetch the data from the servier (firebase)
 
   componentDidMount() {
-    this.props.onFetchOrders();
+    this.props.onFetchOrders(this.props.token);
   }
 
   render() {
@@ -39,11 +39,12 @@ const mapStateToProps = (state) => {
   return {
     orders: state.order.orders,
     loading: state.order.loading,
+    token: state.auth.token,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchOrders: () => dispatch(action.fetchOrders()),
+    onFetchOrders: (token) => dispatch(action.fetchOrders(token)),
   };
 };
 

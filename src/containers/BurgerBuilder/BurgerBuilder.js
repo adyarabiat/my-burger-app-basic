@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 
 import * as BurgerBuilderAction from "../../store/actions/BurgerBuilderActions";
 import * as orderAction from "../../store/actions/OrdersActions";
+import * as AuthAction from "../../store/actions/authAction";
 import Aux from "../../hoc/Aux/Aux";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
@@ -53,7 +54,13 @@ class BurgerBuilder extends React.Component {
   };
 
   Purchasing = () => {
-    this.setState({ purchasing: true });
+    // To check and redirect to the auth page to sign up
+    if (this.props.isAuthenticated) {
+      this.setState({ purchasing: true });
+    } else {
+      this.props.onSetAuthRedirectPath("/checkout");
+      this.props.history.push("/auth");
+    }
   };
 
   closeModel = () => {
@@ -87,6 +94,7 @@ class BurgerBuilder extends React.Component {
             price={this.props.price}
             orderBtn={this.Purchasable(this.props.ings)}
             show={this.Purchasing}
+            isAuth={this.props.isAuthenticated}
           />
         </>
       );
@@ -119,6 +127,7 @@ const mapStateToProps = (state) => {
     ings: state.burgerBuilder.ingredients,
     price: state.burgerBuilder.totalPrice,
     error: state.burgerBuilder.error,
+    isAuthenticated: state.auth.token !== null,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -132,7 +141,12 @@ const mapDispatchToProps = (dispatch) => {
     onInitIngredients: () => {
       dispatch(BurgerBuilderAction.fetchIngredients());
     },
-    onPurchaseInit: () => dispatch(orderAction.purchaseInit()),
+    onPurchaseInit: () => {
+      dispatch(orderAction.purchaseInit());
+    },
+    onSetAuthRedirectPath: (path) => {
+      dispatch(AuthAction.setAuthRedirectPath(path));
+    },
   };
 };
 

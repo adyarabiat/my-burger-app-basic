@@ -35,7 +35,7 @@ export const fetchIngredients = () => {
 
 export const setIngredients = (Ingredients) => {
   return {
-    type: actionType.FETCHED_INGREDIENTS,
+    type: actionType.SET_INGREDIENTS,
     ingredients: Ingredients,
   };
 };

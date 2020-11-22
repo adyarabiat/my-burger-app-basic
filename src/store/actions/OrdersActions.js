@@ -35,11 +35,11 @@ export const purchaseInit = () => {
 };
 
 // Posting the data
-export const purchaseBurgerPost = (orderData) => {
+export const purchaseBurgerPost = (orderData, token) => {
   return (dispatch) => {
     dispatch(purchaseBurgerStart());
     axiosInstance
-      .post("/orders.json", orderData)
+      .post("/orders.json?auth=" + token, orderData)
       .then((response) => {
         console.log(response.data);
         // Here we dispatch purchaseBurgerSucess and we give it id and orderData
@@ -62,9 +62,10 @@ export const fetchOrderStart = () => {
   };
 };
 
-export const fetchOrderFail = () => {
+export const fetchOrderFail = (err) => {
   return {
-    type: actionType.FETCH_SUCCESS,
+    type: actionType.FETCH_FAIL,
+    error: err,
   };
 };
 
@@ -81,11 +82,11 @@ export const fetchOrderInit = () => {
   };
 };
 
-export const fetchOrders = () => {
+export const fetchOrders = (token) => {
   return (dispatch) => {
     dispatch(fetchOrderStart());
     axiosInstance
-      .get("/orders.json")
+      .get("/orders.json?auth=" + token)
       .then((res) => {
         // console.log(res.data);
         const fetchedOrders = [];
@@ -96,7 +97,6 @@ export const fetchOrders = () => {
           });
         }
         // console.log(fetchedOrders);
-
         dispatch(fetchOrderSucess(fetchedOrders));
       })
       .catch((err) => {

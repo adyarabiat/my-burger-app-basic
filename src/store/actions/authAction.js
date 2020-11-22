@@ -23,6 +23,23 @@ export const authFail = (error) => {
   };
 };
 
+// Here we are checking the Timeout 3600 that it comes from Firebase data
+export const logout = () => {
+  return {
+    type: actionType.AUTH_TIMEOUT,
+  };
+};
+
+export const checkAuthTimeout = (expirationTime) => {
+  // we return dispatch to use redux thunk becouse we are runing here async code
+  return (dispatch) => {
+    setTimeout(() => {
+      dispatch(logout());
+      // we *1000 to make the time more
+    }, expirationTime * 1000);
+  };
+};
+
 export const auth = (email, password, isSignup) => {
   return (dispatch) => {
     dispatch(authStart());
@@ -45,6 +62,7 @@ export const auth = (email, password, isSignup) => {
       .then((res) => {
         console.log(res);
         dispatch(authSuccess(res.data.idToken, res.data.localId));
+        dispatch(checkAuthTimeout(res.data.expiresIn));
       })
       .catch((err) => {
         // err.response
@@ -54,3 +72,24 @@ export const auth = (email, password, isSignup) => {
       });
   };
 };
+
+export const setAuthRedirectPath = (path) => {
+  return {
+    type: actionType.SET_AUTH_REDIRECT_PATH,
+    path: path,
+  };
+};
+// The Rules in Firebase we have to set it to :
+
+// {
+//   "rules": {
+//     "ingredients":{
+//           ".read": true,
+//           ".write": true,
+//     },
+//       "orders":{
+//        ".read": "auth != null",
+//         ".write":"auth != null"
+//       }
+//   }
+// }

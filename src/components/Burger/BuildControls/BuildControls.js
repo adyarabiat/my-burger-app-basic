@@ -32,7 +32,7 @@ const bulidControls = (props) => {
         className={styles.OrderButton}
         onClick={props.show}
       >
-        ORDER NOW
+        {props.isAuth ? "ORDER NOW" : "SIGN UP TO ORDER"}
       </button>
     </div>
   );
