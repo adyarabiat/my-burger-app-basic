@@ -58,8 +58,9 @@ class BurgerBuilder extends React.Component {
     if (this.props.isAuthenticated) {
       this.setState({ purchasing: true });
     } else {
-      this.props.onSetAuthRedirectPath("/checkout");
+      // Here I will pass to it the checkout to navigate to it if once i signed in So simply here I'm just going to save it there if I was added or removed ing becouse it will be building:true or false so depend on this it will work So check the burgerBuilder state in Redux
       this.props.history.push("/auth");
+      this.props.onSetAuthRedirectPath("/checkout");
     }
   };
 
