@@ -82,11 +82,17 @@ export const fetchOrderInit = () => {
   };
 };
 
-export const fetchOrders = (token) => {
+export const fetchOrders = (token, userId) => {
   return (dispatch) => {
     dispatch(fetchOrderStart());
+
+    // To get specific order who made by this user
+
+    const queryParams =
+      "?auth=" + token + '&orderBy="userId"&equalTo="' + userId + '"';
+    // after this queryParams we have to change the rules in firebase
     axiosInstance
-      .get("/orders.json?auth=" + token)
+      .get("/orders.json" + queryParams)
       .then((res) => {
         // console.log(res.data);
         const fetchedOrders = [];
