@@ -11,7 +11,12 @@ import AuthReducer from "./store/reducers/authReducer";
 import App from "./App";
 import "./index.css";
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+// we use this rocess.env.NODE_ENV === "development" .....
+// to not let anyone access the redux dev tool when it is not in the development mode
+const composeEnhancers =
+  process.env.NODE_ENV === "development"
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : null || compose;
 
 const rootReducer = combineReducers({
   burgerBuilder: BurgerBuilderReducer,
