@@ -109,7 +109,7 @@ class ContactData extends Component {
         formElementIdentifier
       ].value;
     }
-    console.log(forData);
+    // console.log(forData);
     // Then after we create those objects we will go to the order here down and we set orderData to : forData
     // console.log(forData);
     const order = {

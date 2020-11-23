@@ -24,7 +24,7 @@ export const fetchIngredients = () => {
       .get("/ingredients.json")
       .then((response) => {
         // this.setState({ ingredients: response.data });
-        console.log(response.data);
+        // console.log(response.data);
         dispatch(setIngredients(response.data));
       })
       .catch((err) => {

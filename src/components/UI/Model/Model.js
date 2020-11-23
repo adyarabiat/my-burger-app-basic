@@ -16,10 +16,6 @@ class Model extends Component {
     );
   }
 
-  componentDidUpdate() {
-    // console.log("[Model.js Update]");
-  }
-
   render() {
     return (
       <Aux>

@@ -64,7 +64,7 @@ export const auth = (email, password, isSignup) => {
     axios
       .post(url, authData)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
 
         // LocalStorage here I want to store the data to not logout after refreshing the page so we use the local storage for that
         // So here I need to save the token and the expirationDate
