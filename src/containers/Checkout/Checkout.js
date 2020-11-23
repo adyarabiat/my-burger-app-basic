@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Redirect, Route } from "react-router";
+import { Redirect, Route, withRouter } from "react-router";
 import { connect } from "react-redux";
 
 import CheckoutSummary from "../../components/Order/CheckoutSummary/CheckoutSummary";
@@ -12,6 +12,7 @@ class Checkout extends Component {
   continuedHandler = () => {
     this.props.history.replace("/checkout/contact-data");
   };
+
   render() {
     // If we refresh the page and there will be no ingredients so we have to solve this by check this before
 
@@ -36,6 +37,7 @@ class Checkout extends Component {
         </>
       );
     }
+
     return summary;
   }
 }
@@ -47,6 +49,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Checkout);
+export default connect(mapStateToProps)(withRouter(Checkout));
 
 // Check the Route in the return it is a simple way to pass props to the from here to the component we want like normal but inside our Route
