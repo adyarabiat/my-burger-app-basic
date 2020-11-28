@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import * as BurgerBuilderAction from "../../store/actions/BurgerBuilderActions";
@@ -13,26 +13,30 @@ import axiosInstance from "../../axios-orders";
 import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 
-class BurgerBuilder extends React.Component {
+const BurgerBuilder = (props) => {
   // We can use this
   // constructor(props){
   //   super(props)
   //   this.state ={..}
   // }
 
-  state = {
-    purchasing: false,
-  };
+  const [purchasing, setPurchasing] = useState(false);
+  // state = {
+  //   purchasing: false,
+  // };
 
   // Fetch our data from Firebase
-  componentDidMount() {
-    this.props.onInitIngredients();
-  }
+  useEffect(() => {
+    props.onInitIngredients();
+  }, []);
+  // componentDidMount() {
+  //   this.props.onInitIngredients();
+  // }
 
-  DisableLess = () => {
+  const DisableLess = () => {
     // Disable the less button
     const disableInfo = {
-      ...this.props.ings,
+      ...props.ings,
     };
     for (let key in disableInfo) {
       disableInfo[key] = disableInfo[key] <= 0;
@@ -41,7 +45,7 @@ class BurgerBuilder extends React.Component {
     return disableInfo;
   };
 
-  Purchasable = (ing) => {
+  const Purchasable = (ing) => {
     const purchaseAmount = Object.keys(ing)
       .map((key) => {
         return ing[key];
@@ -53,75 +57,71 @@ class BurgerBuilder extends React.Component {
     return purchaseAmount > 0;
   };
 
-  Purchasing = () => {
+  const Purchasing = () => {
     // To check and redirect to the auth page to sign up
-    if (this.props.isAuthenticated) {
-      this.setState({ purchasing: true });
+    if (props.isAuthenticated) {
+      setPurchasing(true);
+      // this.setState({ purchasing: true });
     } else {
       // Here I will pass to it the checkout to navigate to it if once i signed in So simply here I'm just going to save it there if I was added or removed ing becouse it will be building:true or false so depend on this it will work So check the burgerBuilder state in Redux
-      this.props.history.push("/auth");
-      this.props.onSetAuthRedirectPath("/checkout");
+      props.history.push("/auth");
+      props.onSetAuthRedirectPath("/checkout");
     }
   };
 
-  closeModel = () => {
-    this.setState({ purchasing: false });
+  const closeModel = () => {
+    setPurchasing(false);
+    // this.setState({ purchasing: false });
   };
 
-  continueModel = () => {
+  const continueModel = () => {
     // We call this dispatch here becouse:
     // we want to set purchased to false and not to keep me in the home page so then when I do sucess post the info set it again to true..
-    this.props.onPurchaseInit();
-    this.props.history.push("/checkout");
+    props.onPurchaseInit();
+    props.history.push("/checkout");
   };
 
-  render() {
-    let orderSummary = null;
-    let burger = this.props.error ? (
-      <p>The ingredients not loaded...</p>
-    ) : (
-      <Spinner />
+  let orderSummary = null;
+  let burger = props.error ? <p>The ingredients not loaded...</p> : <Spinner />;
+
+  // {burger}
+  if (props.ings) {
+    burger = (
+      <>
+        <Burger ingredients={props.ings} />
+        <BuildControls
+          ingredientsAdd={props.onAddIngs}
+          ingredientsRemove={props.onRemoveIngs}
+          disable={DisableLess()}
+          price={props.price}
+          orderBtn={Purchasable(props.ings)}
+          show={Purchasing}
+          isAuth={props.isAuthenticated}
+        />
+      </>
     );
 
-    // {burger}
-    if (this.props.ings) {
-      burger = (
-        <>
-          <Burger ingredients={this.props.ings} />
-          <BuildControls
-            ingredientsAdd={this.props.onAddIngs}
-            ingredientsRemove={this.props.onRemoveIngs}
-            disable={this.DisableLess()}
-            price={this.props.price}
-            orderBtn={this.Purchasable(this.props.ings)}
-            show={this.Purchasing}
-            isAuth={this.props.isAuthenticated}
-          />
-        </>
-      );
+    /* we added orderSummary here becouse it uses  ingredients so we have to make sure that ingredients not null and wait to fetch it then we can call it */
 
-      /* we added orderSummary here becouse it uses  ingredients so we have to make sure that ingredients not null and wait to fetch it then we can call it */
-
-      orderSummary = (
-        <OrderSummary
-          ingredients={this.props.ings}
-          cancel={this.closeModel}
-          continue={this.continueModel}
-          price={this.props.price}
-        />
-      );
-    }
-
-    return (
-      <Aux>
-        <Model checkShow={this.state.purchasing} modelClose={this.closeModel}>
-          {orderSummary}
-        </Model>
-        {burger}
-      </Aux>
+    orderSummary = (
+      <OrderSummary
+        ingredients={props.ings}
+        cancel={closeModel}
+        continue={continueModel}
+        price={props.price}
+      />
     );
   }
-}
+
+  return (
+    <Aux>
+      <Model checkShow={purchasing} modelClose={closeModel}>
+        {orderSummary}
+      </Model>
+      {burger}
+    </Aux>
+  );
+};
 
 const mapStateToProps = (state) => {
   return {
