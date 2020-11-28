@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 
 import Aux from "../../hoc/Aux/Aux";
@@ -6,43 +6,43 @@ import styles from "./Layout.module.css";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import SideDrawer from "../../components/Navigation/SideDrawer/SideDrawer";
 
-class Layout extends Component {
+const Layout = (props) => {
   // We change layout to class based to manage a state here for the SideDrawer
 
-  state = {
-    sideDrawerClosed: false,
+  const [sideDrawerClosed, setSideDrawerClosed] = useState(false);
+  // state = {
+  //   sideDrawerClosed: false,
+  // };
+
+  const ChangeSideDrawer = () => {
+    setSideDrawerClosed(false);
+    // this.setState({ sideDrawerClosed: false });
   };
 
-  ChangeSideDrawer = () => {
-    this.setState({ sideDrawerClosed: false });
-  };
-
-  sideDrawerToggle = () => {
+  const sideDrawerToggle = () => {
     // I can do it like this:
-    this.setState({ sideDrawerClosed: true });
+    setSideDrawerClosed(true);
+    // this.setState({ sideDrawerClosed: true });
 
     // Or I can do it like this:
     // this.setState((prevState) => {
     //   return { sideDrawerClosed: !prevState.sideDrawerClosed };
     // });
   };
-  render() {
-    return (
-      <Aux>
-        <SideDrawer
-          isAuth={this.props.isAuthenticated}
-          open={this.state.sideDrawerClosed}
-          closed={this.ChangeSideDrawer}
-        />
-        <Toolbar
-          isAuth={this.props.isAuthenticated}
-          clicked={this.sideDrawerToggle}
-        />
-        <main className={styles.Content}>{this.props.children}</main>
-      </Aux>
-    );
-  }
-}
+
+  return (
+    <Aux>
+      <SideDrawer
+        isAuth={props.isAuthenticated}
+        open={sideDrawerClosed}
+        closed={ChangeSideDrawer}
+      />
+      <Toolbar isAuth={props.isAuthenticated} clicked={sideDrawerToggle} />
+      <main className={styles.Content}>{props.children}</main>
+    </Aux>
+  );
+};
+
 const mapStateToProps = (state) => {
   return {
     isAuthenticated: state.auth.token !== null,

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 
 import Model from "../../components/UI/Model/Model";
 import Aux from "../Aux/Aux";
@@ -6,47 +6,45 @@ import Aux from "../Aux/Aux";
 const withErrorHandler = (WrappedComponent, axios) => {
   // here we making class without name !!
   // that becouse we return it as anonymous
-  return class extends Component {
-    state = {
-      error: null,
+  return (props) => {
+    const [error, setError] = useState(null);
+    //  state = {
+    //   error: null,
+    // };
+
+    // this request method to return it back to null
+    const reqInterceptors = axios.interceptors.request.use((request) => {
+      setError(null);
+      return request;
+    });
+    // we set the first argumant to null which is the response but becouse we do not need it here that is why
+    const resInterceptors = axios.interceptors.response.use(
+      (response) => response,
+      (err) => {
+        setError(err);
+      }
+    );
+
+    useEffect(() => {
+      return () => {
+        axios.interceptors.response.eject(resInterceptors);
+        axios.interceptors.request.eject(reqInterceptors);
+      };
+    }, [resInterceptors, reqInterceptors]);
+
+    const errorConfirmed = () => {
+      setError(null);
     };
 
-    //  Explaination down
-    constructor(props) {
-      super(props);
-      // this request method to return it back to null
-      this.reqInterceptors = axios.interceptors.request.use((request) => {
-        this.setState({ error: null });
-        return request;
-      });
-      // we set the first argumant to null which is the response but becouse we do not need it here that is why
-      this.resInterceptors = axios.interceptors.response.use(
-        (response) => response,
-        (err) => {
-          this.setState({ error: err });
-        }
-      );
-    }
-
-    componentWillUnmount() {
-      axios.interceptors.response.eject(this.reqInterceptors);
-      axios.interceptors.request.eject(this.reqInterceptors);
-    }
-
-    errorConfirmed = () => {
-      this.setState({ error: null });
-    };
-    render() {
-      return (
-        <Aux>
-          <Model checkShow={this.state.error} modelClose={this.errorConfirmed}>
-            {/* we have to check first becouse it will run and it will get error.message before even find it  */}
-            {this.state.error ? this.state.error.message : null}
-          </Model>
-          <WrappedComponent {...this.props} />
-        </Aux>
-      );
-    }
+    return (
+      <Aux>
+        <Model checkShow={error} modelClose={errorConfirmed}>
+          {/* we have to check first becouse it will run and it will get error.message before even find it  */}
+          {error ? error.message : null}
+        </Model>
+        <WrappedComponent {...props} />
+      </Aux>
+    );
   };
 };
 
