@@ -93,7 +93,7 @@ const ContactData = (props) => {
 
   const [formIsValid, setFormIsValid] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   const orderHandler = (e) => {
     // console.log(this.props.ingre);
