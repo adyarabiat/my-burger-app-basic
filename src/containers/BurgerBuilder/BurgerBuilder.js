@@ -26,9 +26,10 @@ const BurgerBuilder = (props) => {
   // };
 
   // Fetch our data from Firebase
+  const { onInitIngredients } = props;
   useEffect(() => {
-    props.onInitIngredients();
-  }, []);
+    onInitIngredients();
+  }, [onInitIngredients]);
   // componentDidMount() {
   //   this.props.onInitIngredients();
   // }

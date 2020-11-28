@@ -10,9 +10,10 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 const Orders = (props) => {
   // Now here we want to fetch the data from the servier (firebase)
 
+  const { onFetchOrders, token, userId } = props;
   useEffect(() => {
-    props.onFetchOrders(props.token, props.userId);
-  }, []);
+    onFetchOrders(token, userId);
+  }, [onFetchOrders, token, userId]);
 
   // componentDidMount() {
   //   this.props.onFetchOrders(this.props.token, this.props.userId);

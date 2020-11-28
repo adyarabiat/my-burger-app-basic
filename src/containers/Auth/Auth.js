@@ -40,12 +40,12 @@ const Auth = (props) => {
     },
   });
   const [isSignup, setIsSignup] = useState(false);
-
+  const { buildingBurger, authRedirectPath, onSetAuthRedirectPath } = props;
   useEffect(() => {
-    if (!props.buildingBurger && props.authRedirectPath !== "/") {
-      props.onSetAuthRedirectPath();
+    if (!buildingBurger && authRedirectPath !== "/") {
+      onSetAuthRedirectPath();
     }
-  });
+  }, [buildingBurger, authRedirectPath, onSetAuthRedirectPath]);
   // componentDidMount() {
   //   if (!this.props.buildingBurger && this.props.authRedirectPath !== "/") {
   //     this.props.onSetAuthRedirectPath();
