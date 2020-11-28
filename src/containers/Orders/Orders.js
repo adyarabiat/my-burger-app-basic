@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
 import Order from "../../components/Order/Order";
@@ -7,33 +7,35 @@ import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import * as action from "../../store/actions/OrdersActions";
 import Spinner from "../../components/UI/Spinner/Spinner";
 
-class Orders extends Component {
+const Orders = (props) => {
   // Now here we want to fetch the data from the servier (firebase)
 
-  componentDidMount() {
-    this.props.onFetchOrders(this.props.token, this.props.userId);
-  }
+  useEffect(() => {
+    props.onFetchOrders(props.token, props.userId);
+  }, []);
 
-  render() {
-    let orders = <Spinner />;
-    if (!this.props.loading) {
-      orders = (
-        <div>
-          {this.props.orders.map((order) => {
-            return (
-              <Order
-                key={order.id}
-                ingredients={order.ingredients}
-                price={+order.price}
-              />
-            );
-          })}
-        </div>
-      );
-    }
-    return <div>{orders}</div>;
+  // componentDidMount() {
+  //   this.props.onFetchOrders(this.props.token, this.props.userId);
+  // }
+
+  let orders = <Spinner />;
+  if (!props.loading) {
+    orders = (
+      <div>
+        {props.orders.map((order) => {
+          return (
+            <Order
+              key={order.id}
+              ingredients={order.ingredients}
+              price={+order.price}
+            />
+          );
+        })}
+      </div>
+    );
   }
-}
+  return <div>{orders}</div>;
+};
 
 const mapStateToProps = (state) => {
   return {
